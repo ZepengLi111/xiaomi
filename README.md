@@ -50,3 +50,17 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+### 开发环境
+需要在src/py文件夹下运行（如果有python代码的更改）
+```shell
+pyinstaller ./py/api.py --clean --distpath ./pydist
+```
+将src/py下的文件夹pydist整个复制到dist文件夹下
+src/py/pydist -> dist/pydist
+然后运行
+```shell
+npm run dev
+```
+即可启动热更新开发
+
