@@ -13,6 +13,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
+    "element-plus": "^2.3.9",
     "pinia": "^2.1.4",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
@@ -27,14 +29,18 @@
     "@vue/eslint-config-typescript": "^11.0.3",
     "@vue/test-utils": "^2.4.1",
     "@vue/tsconfig": "^0.4.0",
-    "electron": "^25.4.0",
+    "app-builder-bin": "^4.1.2",
+    "electron": "^25.5.0",
     "electron-builder": "^24.6.3",
     "eslint": "^8.45.0",
     "eslint-plugin-vue": "^9.15.1",
     "jsdom": "^22.1.0",
+    "less": "^4.2.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.0",
     "typescript": "~5.1.6",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.1",
     "vite": "^4.4.6",
     "vitest": "^0.33.0",
     "vue-tsc": "^1.8.6"
