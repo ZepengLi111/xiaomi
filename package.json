@@ -14,10 +14,15 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
+    "axios": "^1.4.0",
     "element-plus": "^2.3.9",
+    "mitt": "^3.0.1",
+    "neat-csv": "^7.0.0",
     "pinia": "^2.1.4",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "zeromq": "^6.0.0-beta.17",
+    "zerorpc": "^0.9.8"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.2",

@@ -18,7 +18,7 @@
 
 </script>
 
-<style scoped lang="less">
+<style lang="less">
   .header {
     margin-top: 16px;
     width: 100%;

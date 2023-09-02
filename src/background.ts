@@ -1,17 +1,26 @@
 // electron 主进程文件
 import {app, BrowserWindow} from 'electron'
 import process from "process";
+import {writeFile, readFile} from "fs"
+import neatCsv from 'neat-csv';
 const fs = require('fs')
 const path = require('path')
 const electron = require('electron')
 const ipc = electron.ipcMain
 
+
 let pyProc:any = null
 let pyPort = null
 
 const createPyProc = () => {
-    let port = '4242'
-    let script = path.join(__dirname, '../pydist/api', 'api')
+    let port = '5031'
+    let script
+    if (process.argv[2]) {
+        script = path.join(__dirname, '../dist/pydist/api', 'api') // 开发环境
+    } else {
+        script = path.join(__dirname, '../pydist/api', 'api') // 生产环境
+    }
+
     fs.appendFile('./debug.txt', script + ' ', () => {
 
     })
@@ -75,6 +84,40 @@ const createWindow = () => {
     ipc.on("window-close", () => {
         win.close()
     })
+    ipc.on("choose-folder",  (event, csvContents:string[], names:string[]) => {
+        electron.dialog.showOpenDialog({ properties: ['openDirectory'] }).then((result) => {
+            let errNames:string[] = []
+            let dateStr = new Date().getTime()
+            for (let i = 0; i < csvContents.length; i++)
+            {
+                writeFile(result.filePaths[0] + `\\${names[i]}-${dateStr}-log.csv`, csvContents[i], (err) => {
+                    if (err) errNames.push(names[i])
+                    if (i == csvContents.length - 1) {
+                        event.sender.send("choose-folder-finished", errNames)
+                    }
+                })
+            }
+        })
+    })
+    ipc.on("read-chat-file", (event) => {
+        electron.dialog.showOpenDialog(
+            {properties: ['openFile'], filters: [{name: "聊天记录", extensions: ['csv']}]}
+        ).then(result => {
+            if (result.filePaths[0]) {
+                readFile(result.filePaths[0], (err, data) => {
+                    if (err) event.sender.send("read-chat-file-finished")
+                    else {
+                        neatCsv(data, ).then(r => {
+                            event.sender.send("read-chat-file-finished", r)
+                        }).catch(err => {
+                            event.sender.send("read-chat-file-finished")
+                        })
+
+                    }
+                })
+            }
+        })
+    })
     // 启动窗口时隐藏,直到渲染进程加载完成「ready-to-show 监听事件」 再显示窗口,防止加载时闪烁
     win.once("ready-to-show", () => {
         win.show(); // 显示窗口
@@ -83,7 +126,6 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
     createWindow()
-
 })
 
 // 除了 macOS 外，当所有窗口都被关闭的时候退出程序。 macOS窗口全部关闭时,dock中程序不会退出

@@ -7,19 +7,19 @@
       </el-row>
 
       <el-menu class="menu">
-        <el-menu-item index="1">
-          <el-icon><location /></el-icon>
-          <span>Navigator One</span>
-        </el-menu-item>
-        <el-menu-item index="2">
+        <el-menu-item index="1" @click="changePage('chatContent')">
           <el-icon><ChatDotRound /></el-icon>
-          <span>Navigator Two</span>
+          <span>微信消息</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="2" @click="changePage('session2')">
           <el-icon><document /></el-icon>
+          <span>统计分析</span>
+        </el-menu-item>
+        <el-menu-item index="3" @click="changePage('session3')">
+          <el-icon><location /></el-icon>
           <span>Navigator Three</span>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="4" @click="changePage('session4')">
           <el-icon><setting /></el-icon>
           <span>Navigator Four</span>
         </el-menu-item>
@@ -28,13 +28,21 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Aside"
+<script setup lang="ts">
+import { getCurrentInstance } from 'vue'
+import axios from "axios";
+const instance = getCurrentInstance();
+const changePage = (pagePath:string) => {
+  axios.get("http://localhost:5031/func", {
+    params: {
+      funcNum: 0,
+    }
+  })
+  instance?.proxy?.$Bus.emit("change-page-main", pagePath)
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
   .aside {
     width: 100%;
     margin: 0;

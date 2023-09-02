@@ -2,6 +2,7 @@
 // import { RouterLink, RouterView } from 'vue-router'
 import Header from "@/components/Header.vue";
 import Aside from "@/components/Aside.vue";
+import Main from "@/components/Main.vue";
 
 </script>
 
@@ -11,7 +12,7 @@ import Aside from "@/components/Aside.vue";
       <el-aside><Aside></Aside></el-aside>
       <el-container class="right-container">
         <el-header><Header></Header></el-header>
-        <el-main>Main</el-main>
+        <el-main><Main></Main></el-main>
       </el-container>
     </el-container>
   </div>
