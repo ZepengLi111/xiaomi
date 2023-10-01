@@ -44,6 +44,11 @@ const changePage = (pagePath:string) => {
 
 <style lang="less">
   .aside {
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+
     width: 100%;
     margin: 0;
     padding: 0;

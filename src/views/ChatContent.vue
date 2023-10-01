@@ -1,6 +1,6 @@
 <template>
   <div class="head">
-    <el-card class="box-card">
+    <el-card class="box-card" shadow="hover">
       <template #header>
         <div class="card-header">
           <span class="user-name">{{chatStore.userName}}</span>
@@ -25,9 +25,10 @@
       </template>
       <el-collapse v-model="chatStore.tableActiveName" @change="handleCollapseChange" accordion>
         <el-collapse-item  :title="item.name" :name="item.name" :key="item.id" v-for="item in chatStore.listenChatList">
-          <el-table :row-class-name="tableRowClassName" :data="item.messages.slice((item.currentPage-1)*10, item.currentPage*10)" style="width: 100%" max-height="330">
+          <el-table :row-class-name="tableRowClassName" :data="item.messages.filter(i => i.speaker !== 'SYS' && i.speaker !== 'TIME').slice((item.currentPage-1)*10, item.currentPage*10)" style="width: 100%">
             <el-table-column prop="speaker" label="发言者" width="120"></el-table-column>
             <el-table-column prop="message" label="内容"></el-table-column>
+            <el-table-column prop="time" label="时间"></el-table-column>
             <el-table-column fixed="right" label="操作" width="180">
               <template #default="scope">
                 <el-button type="danger" plain size="small" @click="onDeleteBtnClick(scope, item.messages)">删除</el-button>
@@ -37,7 +38,7 @@
             </el-table-column>
           </el-table>
           <el-pagination layout="prev, pager, next" v-model:current-page="item.currentPage"
-                         @current-change="handleCurrentChange" :total="item.messages.length"></el-pagination>
+                         @current-change="handleCurrentChange" :total="item.messages.filter(i => i.speaker !== 'SYS' && i.speaker !== 'TIME').length"></el-pagination>
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -165,6 +166,7 @@ const importDialogConfirmBtnClick = () => {
       {
         let content = ""
         let speaker = ""
+        let time = ""
         for (let p in data[i]) {
           // console.log(typeof a)
           // console.log(data[i][a])
@@ -176,10 +178,11 @@ const importDialogConfirmBtnClick = () => {
           // console.log("speaker".length)
           // console.log(p.trim() == "speaker")
           if (p.trim() === "speaker") {speaker = data[i][p]}
+          if (p.trim() === "time") {time = data[i][p]}
         }
         if (content !== "" && speaker !== "") {
           success = true
-          chatStore.addMessage(importRadio.value, content, speaker)
+          chatStore.addMessage(importRadio.value, content, speaker, time)
         }
       }
       if (success) {
@@ -214,11 +217,11 @@ const exportDialogConfirmBtnClick = () => {
     let names = []
     for (let i = 0; i < chosenChat.length; i++)
     {
-      let content = '\ufeff' + ["speaker", "content"].join(',') + '\n'
+      let content = '\ufeff' + ["speaker", "content", "time"].join(',') + '\n'
       const messages = chosenChat[i].messages
       for (let j = 0; j < messages.length; j++)
       {
-        content += [messages[j].speaker, messages[j].message].join(',') + '\n'
+        content += [messages[j].speaker, messages[j].message, messages[j].time].join(',') + '\n'
       }
       csvContents.push(content)
       names.push(chosenChat[i].name)
@@ -273,19 +276,19 @@ const listenOne = function () {
 const disableBtnClass = ref("")
 const disableBtnText = ref("自动检测中")
 const disableBtnTipText = ref("正在已一定时间间隔检测新的聊天消息，点击可暂停")
-let internal = setInterval(listenOne, 4000)
+chatStore.listenMessage()
 const onDisableBtnClick = () => {
   if (disableBtnClass.value === "") {
     disableBtnClass.value = "is-plain"
     disableBtnText.value = "自动检测(已暂停)"
     disableBtnTipText.value = "周期检测新聊天信息功能已暂停，您可以点击恢复，或者点击旁边的detect按钮手动检测"
-    clearInterval(internal)
+    chatStore.cancelListenMessage()
   }
   else {
     disableBtnClass.value = ""
-    disableBtnText.value = "internal: 2s"
+    disableBtnText.value = "自动检测中"
     disableBtnTipText.value = "正在已一定时间间隔检测新的聊天消息，点击可暂停"
-    internal = setInterval(listenOne, 4000)
+    chatStore.listenMessage()
   }
 }
 
@@ -400,6 +403,10 @@ const onPutBtnClick = () => {
   width: 100%;
   .card-header {
     .user-name {
+      -webkit-user-select:none;
+      -moz-user-select:none;
+      -ms-user-select:none;
+      user-select:none;
       font-weight: bold;
     }
     display: flex;

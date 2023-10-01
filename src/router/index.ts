@@ -11,7 +11,7 @@ const router = createRouter({
     {
       path: '/session2',
       name: 'session2',
-      component: () => import('../views/Session2.vue')
+      component: () => import('../views/Statistics.vue')
     },
     {
       path: '/session3',
